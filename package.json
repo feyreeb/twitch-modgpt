@@ -1,0 +1,41 @@
+{
+    "name": "twitch-modgpt",
+    "version": "1.0.0",
+    "description": "An Twitch mod that uses Chat GPT to perform chat interactions and chat moderations.",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "nodemon src/index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RetaxMaster/twitch-modgpt.git"
+    },
+    "keywords": [
+        "chatgpt",
+        "gpt",
+        "twitch",
+        "bot",
+        "mod"
+    ],
+    "author": "RetaxMaster",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/RetaxMaster/twitch-modgpt/issues"
+    },
+    "homepage": "https://github.com/RetaxMaster/twitch-modgpt#readme",
+    "imports": {
+        "#Helpers/*": "./src/helpers/*.js",
+        "#Classes/*": "./src/app/Classes/*.js",
+        "#Controllers": "./src/app/Controllers/index.js",
+        "#Scripts/*": "./src/app/Scripts/*.js",
+        "#root/*": "./*.js"
+    },
+    "dependencies": {
+        "axios": "^1.7.2",
+        "express": "^4.19.2",
+        "websocket": "^1.0.35"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.0"
+    }
+}

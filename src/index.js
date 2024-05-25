@@ -1,0 +1,41 @@
+const express = require("express");
+
+try {
+    
+    require("#Scripts/SetEnv");
+
+    //import "#Scripts/RegisterEvents";
+
+    //Initializations
+    const app = express();
+
+    app.set("port", process.env.PORT || 3000);
+    app.set("host", process.env.HOST || "localhost");
+
+    // Global middlewares
+    app.use(express.json({
+        limit: "10mb",
+        extended: true
+    }));
+
+    app.use(express.urlencoded({
+        limit: "10mb",
+        extended: true,
+        parameterLimit: 50000
+    }));
+
+    // Routes
+    app.use(require("./routes"));
+
+    //Starting Server
+    app.listen(
+        app.get("port"),
+        app.get("host"),
+        () => {
+            console.log(`Server is running on http://${app.get("host")}:${app.get("port")}`);
+        }
+    );
+
+} catch (error) {
+    console.log(error);
+}
