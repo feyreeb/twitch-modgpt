@@ -3,8 +3,7 @@ const express = require("express");
 try {
     
     require("#Scripts/SetEnv");
-
-    //import "#Scripts/RegisterEvents";
+    require("#Scripts/RegisterEvents");
 
     //Initializations
     const app = express();

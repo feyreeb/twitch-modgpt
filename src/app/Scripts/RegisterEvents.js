@@ -1,19 +1,108 @@
-import { Socket } from "#Classes/Socket";
-import { TwitchBot } from "#Classes/TwitchBot";
+const fs = require("fs");
+const path = require("path");
+const { Socket } = require("#Classes/Socket");
+const { TwitchBot } = require("#Classes/TwitchBot");
+const { parseMessage } = require("#Helpers/twitchParser");
+
+// Parse Channels
+const channels = process.env.CHANNELS.split(",").map( channel => "#" + channel.toLowerCase() );
 
 // Handle connections
-
-Socket.listen("connect", connection => {
-
-    console.log("Connected successfully to Twitch IRC!");
-
-    connection.sendUTF(`PASS ${process.env.TWITCH_BOT_ACCESS_TOKEN}`); 
-    connection.sendUTF(`NICK ${account}`);
-
-});
 
 Socket.listen('connectFailed', error => {
     console.log("Error connecting to Twitch IRC :(");
     console.log(error);
 });
 
+Socket.listen("connect", connection => {
+
+    console.log("Connected successfully to Twitch IRC!");
+    TwitchBot.setConnection(connection);
+
+    // First, we check if we can login the bot
+    const botTokenFile = path.resolve("bot-token.json");
+
+    if (fs.existsSync(botTokenFile)) {
+
+        const token = JSON.parse(
+            fs.readFileSync(botTokenFile, { encoding: 'utf8', flag: 'r' })
+        );
+
+        TwitchBot.login(token.access_token, token.refresh_token);
+        TwitchBot.setBotScopes(token.scope);
+        
+    }
+    else {
+        console.log("Bot token hasn't been generated yet");
+    }
+
+    // Then, we register bot events
+    connection.on('close', () => {
+        console.log('Connection Closed');
+        console.log(`close description: ${connection.closeDescription}`);
+        console.log(`close reason code: ${connection.closeReasonCode}`);
+    });
+
+    connection.on('message', ircMessage => {
+
+        const rawIrcMessage = ircMessage.utf8Data.trimEnd();
+        const messages = rawIrcMessage.split('\r\n');
+
+        messages.forEach(message => {
+
+            const parsedMessage = parseMessage(message);
+
+            if(!!!parsedMessage) return;
+
+            switch (parsedMessage.command.command) {
+
+                case 'PRIVMSG':
+                    TwitchBot.onMessage(
+                        parsedMessage.command.channel,
+                        parsedMessage.source.nick,
+                        parsedMessage.parameters
+                    );
+                    break;
+
+                case 'PING':
+                    connection.sendUTF('PONG ' + parsedMessage.parameters);
+                    break;
+
+                case '001':
+                    // Successfully logged in, so join the channels.
+                    channels.forEach(channel => {
+                        console.log(`Joining to channel ${channel}`);
+                        connection.sendUTF(`JOIN ${channel}`); 
+                    })
+                    break; 
+
+                /* case 'JOIN':
+                    // For now we don't send an initial message
+                    connection.sendUTF(`PRIVMSG #read_rizzy :asd`);
+                    break; */
+
+                case 'PART':
+                    console.log('The channel must have banned (/ban) the bot.');
+                    connection.close();
+                    break;
+
+                case 'NOTICE': 
+                    // If the authentication failed, leave the channel.
+                    // The server will close the connection.
+                    if ('Login authentication failed' === parsedMessage.parameters) {
+                        console.log(`Authentication failed; left ${channel}`);
+                        connection.sendUTF(`PART ${channel}`);
+                    }
+                    else if ('You don’t have permission to perform that action' === parsedMessage.parameters) {
+                        console.log(`No permission. Check if the access token is still valid. Left ${channel}`);
+                        connection.sendUTF(`PART ${channel}`);
+                    }
+                    break;
+
+            }
+
+        });
+
+    });
+
+});

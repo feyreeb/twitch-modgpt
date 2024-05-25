@@ -4,7 +4,8 @@ const {
     USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS,
     BOT_HOSTED_URL,
     TWITCH_BOT_CLIENT_ID,
-    TWITCH_BOT_CLIENT_SECRET
+    TWITCH_BOT_CLIENT_SECRET,
+    CHANNELS
 } = process.env;
 
 if ( isEmpty(TWITCH_BOT_CLIENT_ID) || isEmpty(TWITCH_BOT_CLIENT_SECRET) )
@@ -12,6 +13,9 @@ if ( isEmpty(TWITCH_BOT_CLIENT_ID) || isEmpty(TWITCH_BOT_CLIENT_SECRET) )
 
 if ( isEmpty(BOT_HOSTED_URL) )
     throw new Error("You need to provide BOT_HOSTED_URL env variable");
+
+if ( isEmpty(CHANNELS) )
+    throw new Error("You need to provide at least one channel on CHANNELS env variable");
 
 if ( isEmpty(USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS) )
     process.env.USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS = false;

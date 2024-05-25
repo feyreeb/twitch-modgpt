@@ -1,5 +1,6 @@
 const { Controller } = require("./Controller");
 const { OAuth } = require("#Classes/TwitchOAuth");
+const { TwitchBot } = require("#Classes/TwitchBot");
 
 class RequestsController extends Controller {
 
@@ -25,9 +26,18 @@ class RequestsController extends Controller {
         if (error)
             return res.send("You must authorize the app so the bot can send messages using this account.");
 
-        const saved = await OAuth.getAndSaveToken("bot", code);
+        const { saved, token } = await OAuth.getAndSaveToken("bot", code);
 
-        return saved ? res.send("That's all! Now your bot is working") : res.send("There was an error getting your token");
+        if (saved) {
+            
+            TwitchBot.login(token.access_token, token.refresh_token);
+            TwitchBot.setBotScopes(token.scope);
+
+            return res.send("That's all! Now your bot is working");
+            
+        }
+
+        return res.send("There was an error getting your token");
 
     }
 
@@ -38,7 +48,7 @@ class RequestsController extends Controller {
         if (error)
             return res.send("You must authorize the app so the bot can perform moderation actions.");
 
-        const saved = await OAuth.getAndSaveToken("streamer", code);
+        const { saved } = await OAuth.getAndSaveToken("streamer", code);
 
         return saved ? res.send("That's all! Now your bot can perform moderation actions") : res.send("There was an error getting your token");
 

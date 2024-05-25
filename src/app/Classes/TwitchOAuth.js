@@ -92,7 +92,7 @@ class TwitchOAuth {
      * Get and save the token of the user
      * @param {String} from Which user type is getting the token
      * @param {String} code The code responded by Twitch when application was authorized
-     * @returns {Bool} Wether the token was get and saved successfully
+     * @returns {JSON} The status og the saving and the token
      */
     async getAndSaveToken(from, code) {
 
@@ -113,11 +113,6 @@ class TwitchOAuth {
             clientId = process.env.TWITCH_STREAMER_CLIENT_ID;
             clientSecret = process.env.TWITCH_STREAMER_CLIENT_SECRET;
         }
-
-            console.log(process.env.BOT_HOSTED_URL + redirectUri);
-            console.log(tokenFileName);
-            console.log(clientId);
-            console.log(clientSecret);
 
         // Then, we send the request to Twitch to get the token
         try {
@@ -147,11 +142,17 @@ class TwitchOAuth {
                 writeStream.end();
             }
 
-            return true;
+            return {
+                token: token,
+                saved: true
+            };
             
         } catch (error) {
             console.error('Error:', error.response ? error.response.data : error.message);
-            return false;
+            return {
+                token: null,
+                saved: false
+            };
         }
 
     }

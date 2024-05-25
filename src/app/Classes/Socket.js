@@ -1,8 +1,5 @@
-import websocket from "websocket";
-import { helpers } from "#Helpers/helpers";
-
-const { isEmpty } = helpers;
-const WebSocketClient = websocket.client;
+const WebSocketClient = require("websocket").client;
+const { isEmpty } = require("#Helpers/helpers");
 
 class SocketService {
 
@@ -55,4 +52,4 @@ class SocketService {
 
 const Socket = new SocketService();
 
-export { Socket };
+module.exports = { Socket };
