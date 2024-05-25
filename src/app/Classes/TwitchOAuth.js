@@ -89,30 +89,41 @@ class TwitchOAuth {
     }
 
     /**
+     * Get the params that will be setted on the request to Twitch token endpoints
+     * @param {String} from Which user type is getting the token
+     * @returns {JSON} The params for the request
+     */
+    getRequestParams(from) {
+
+        if (from === "bot")
+            return {
+                redirectUri: "/get-bot-token",
+                tokenFileName: "bot-token.json",
+                clientId: process.env.TWITCH_BOT_CLIENT_ID,
+                clientSecret: process.env.TWITCH_BOT_CLIENT_SECRET
+            }
+        else
+            return {
+                redirectUri: "/get-streamer-token",
+                tokenFileName: "streamer-token.json",
+                clientId: process.env.TWITCH_STREAMER_CLIENT_ID,
+                clientSecret: process.env.TWITCH_STREAMER_CLIENT_SECRET
+            }
+
+    }
+
+    /**
      * Get and save the token of the user
      * @param {String} from Which user type is getting the token
      * @param {String} code The code responded by Twitch when application was authorized
-     * @returns {JSON} The status og the saving and the token
+     * @returns {JSON} The status of the saving and the token
      */
     async getAndSaveToken(from, code) {
 
         const { tokenUrl } = this;
-        let clientId, clientSecret, redirectUri, tokenFileName;
-
+        
         // First, we get who is getting and saving the token
-        if (from === "bot") {
-            redirectUri = "/get-bot-token";
-            tokenFileName = "bot-token.json";
-            clientId = process.env.TWITCH_BOT_CLIENT_ID;
-            clientSecret = process.env.TWITCH_BOT_CLIENT_SECRET;
-
-        }
-        else {
-            redirectUri = "/get-streamer-token";
-            tokenFileName = "streamer-token.json";
-            clientId = process.env.TWITCH_STREAMER_CLIENT_ID;
-            clientSecret = process.env.TWITCH_STREAMER_CLIENT_SECRET;
-        }
+        const { clientId, clientSecret, redirectUri, tokenFileName } = this.getRequestParams(from);
 
         // Then, we send the request to Twitch to get the token
         try {
@@ -153,6 +164,67 @@ class TwitchOAuth {
                 token: null,
                 saved: false
             };
+        }
+
+    }
+
+    /**
+     * Refresh the access token when it expires
+     * @param {String} from Which user type is getting the token
+     * @param {String} refreshToken The refresh_token sent by Twitch first time we requested the token
+     * @returns {JSON} The status of the saving and the token
+     */
+    async refreshToken(refreshToken, from) {
+
+        const { tokenUrl } = this;
+        
+        // First, we get who is getting and saving the token
+        const { clientId, clientSecret, tokenFileName } = this.getRequestParams(from);
+        const tokenFile = path.resolve(tokenFileName);
+
+        // Then, we send the request to Twitch to get the token
+        try {
+            
+            const response = await axios.post(tokenUrl, {
+                client_id: clientId,
+                client_secret: clientSecret,
+                grant_type: 'refresh_token',
+                refresh_token: refreshToken
+            }, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+
+            // Finally, we save the token in a file
+            const token = response.data;
+
+            if(fs.existsSync(tokenFile)) {
+                fs.writeFileSync(tokenFile, JSON.stringify(token))
+            }
+            else {
+                const writeStream = fs.createWriteStream(tokenFile);
+                writeStream.write(JSON.stringify(token));
+                writeStream.end();
+            }
+
+            return {
+                token: token,
+                saved: true
+            };
+            
+        } catch (error) {
+
+            console.error('Error:', error.response ? error.response.data : error.message);
+
+            if(fs.existsSync(tokenFile))
+                fs.unlinkSync(tokenFile);
+
+            return {
+                token: null,
+                saved: false
+            };
+
         }
 
     }

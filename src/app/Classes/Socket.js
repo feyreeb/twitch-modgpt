@@ -17,19 +17,14 @@ class SocketService {
 
     }
 
+    /**
+     * Listen an event from the server
+     * @param {Strimg} event The event you want to listen
+     * @param {Function} callback The function that will be executed when the event triggers
+     */
     listen(event, callback) {
         const socket = this._connectToSocketServer();
         socket.on(event, callback);
-    }
-
-    /**
-     * Emmits an event from the client to the socket server
-     * @param {String} event The name of the event you want to emit
-     * @param {any} data The data you want to emit
-     */
-    emitToServer(event, data) {
-        const socket = this._connectToSocketServer();
-        socket.emit(event, data);
     }
 
     /**

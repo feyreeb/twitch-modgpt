@@ -48,9 +48,10 @@ Socket.listen("connect", connection => {
         const rawIrcMessage = ircMessage.utf8Data.trimEnd();
         const messages = rawIrcMessage.split('\r\n');
 
-        messages.forEach(message => {
+        messages.forEach(async message => {
 
             const parsedMessage = parseMessage(message);
+            console.log(message);
 
             if(!!!parsedMessage) return;
 
@@ -87,16 +88,28 @@ Socket.listen("connect", connection => {
                     break;
 
                 case 'NOTICE': 
-                    // If the authentication failed, leave the channel.
-                    // The server will close the connection.
-                    if ('Login authentication failed' === parsedMessage.parameters) {
-                        console.log(`Authentication failed; left ${channel}`);
-                        connection.sendUTF(`PART ${channel}`);
+                    
+                    const reauthenticated = await TwitchBot.reauthenticateBot();
+
+                    if (!reauthenticated) {
+
+                        // If the authentication failed, leave the channel.
+                        // The server will close the connection.
+                        console.log(`Couldn't authenticate the bot. You must reauthorize the bot from ${process.env.BOT_HOSTED_URL}/auth-bot`);
+
+                        channels.forEach(channel => {
+                            if ('Login authentication failed' === parsedMessage.parameters) {
+                                console.log(`Authentication failed; left ${channel}`);
+                                connection.sendUTF(`PART ${channel}`);
+                            }
+                            else if ('You don’t have permission to perform that action' === parsedMessage.parameters) {
+                                console.log(`No permission. Check if the access token is still valid. Left ${channel}`);
+                                connection.sendUTF(`PART ${channel}`);
+                            }
+                        });
+                        
                     }
-                    else if ('You don’t have permission to perform that action' === parsedMessage.parameters) {
-                        console.log(`No permission. Check if the access token is still valid. Left ${channel}`);
-                        connection.sendUTF(`PART ${channel}`);
-                    }
+
                     break;
 
             }
