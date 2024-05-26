@@ -1,6 +1,7 @@
 const axios = require("axios");
 const { TokenTrait } = require("#Traits/TwitchAPI/TokenTrait");
 const { UserTrait } = require("#Traits/TwitchAPI/UserTrait");
+const { convertStringBoolean  } = require("#Helpers/helpers");
 
 class TwitchAPI {
 
@@ -8,10 +9,10 @@ class TwitchAPI {
 
         if (!TwitchAPI.instance) {
 
-            this.usingTokenFromBot = process.env.USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS;
+            this.usingTokenFromBot = convertStringBoolean(process.env.USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS);
             this.from = this.usingTokenFromBot ? "bot" : "streamer";
-            this.clientId = this.usingTokenFromBot ? TWITCH_BOT_CLIENT_ID : TWITCH_STREAMER_CLIENT_ID;
-            this.clientSecret = this.usingTokenFromBot ? TWITCH_STREAMER_CLIENT_ID : TWITCH_STREAMER_CLIENT_SECRET;
+            this.clientId = this.usingTokenFromBot ? process.env.TWITCH_BOT_CLIENT_ID : process.env.TWITCH_STREAMER_CLIENT_ID;
+            this.clientSecret = this.usingTokenFromBot ? process.env.TWITCH_STREAMER_CLIENT_ID : process.env.TWITCH_STREAMER_CLIENT_SECRET;
             this.token = null;
 
             this.endpoints = {

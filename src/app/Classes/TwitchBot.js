@@ -1,5 +1,6 @@
-const { OAuth } = require("#Classes/TwitchOAuth");
-const { TwitchAPI } = require("#Classes/TwitchAPI");
+const { BotInitializationTrait } = require("#Traits/TwitchBot/BotInitializationTrait");
+const { BotInteractionsTrait } = require("#Traits/TwitchBot/BotInteractionsTrait");
+const { BotModerationActionsTrait } = require("#Traits/TwitchBot/BotModerationActionsTrait");
 
 class TwitchBotService {
 
@@ -13,6 +14,11 @@ class TwitchBotService {
             this.accessBotToken = null;
             this.botData = null;
 
+            // A way to implement traits in JavaScript
+            if("useTrait" in this)
+                for (const trait of this.useTrait())
+                    Object.assign(Object.getPrototypeOf(this), trait);
+
             TwitchBotService.instance = this;
 
         }
@@ -21,94 +27,19 @@ class TwitchBotService {
 
     }
 
-    async configureBot() {
-
-        this.botData = await TwitchAPI.getUserByToken({
-            token: this.accessBotToken,
-            clientId: process.env.TWITCH_BOT_CLIENT_ID
-        });
-
-    }
-
     /**
-     * Set the connection instance for the bot
-     * @param {Connection} connection The connection instance to the socket server
+     * Allows you to use traits/mixins inside this controller
+     * @returns {Array} The traits/mixins you want to use
      */
-    setConnection(connection) {
-        this.connection = connection;
+    useTrait() {
+        return [
+            BotInitializationTrait,
+            BotInteractionsTrait,
+            BotModerationActionsTrait
+        ];
     }
 
-    /**
-     * Set the scopes that this bot can use
-     * @param {Array} scopes The scopes of the token
-     */
-    setBotScopes(scopes) {
-        this.botScopes = scopes;
-    }
-
-    /**
-     * Authenticate the bot in the Twitch IRC servers
-     * @param {String} accessToken The access token returned by Twitch when authenticating the bot
-     * @param {String} refreshToken The refresh token returned by Twitch with the acess token
-     */
-    login(accessToken, refreshToken) {
-        
-        const { connection } = this;
-
-        connection.sendUTF(`PASS oauth:${accessToken}`); 
-        connection.sendUTF(`NICK AnyUser`);
-
-        this.accessBotToken = accessToken;
-        this.refreshBotToken = refreshToken;
-
-    }
-
-    /**
-     * Refresh the access token and reauthenticates the bot in the Twitch IRC server
-     * @returns {Bool} Wether was possible to reauthentica the bot
-     */
-    async reauthenticateBot() {
-
-        const { saved, token } = await OAuth.refreshToken(this.refreshBotToken, "bot");
-
-        if (saved) {
-            this.login(token.access_token, token.refresh_token);
-            this.setBotScopes(token.scope);
-            return true;
-        }
-
-        return false;
-
-    }
-
-    /**
-     * Perform actions when we receive a message from a channel
-     * @param {String} channel The Twitch channel from where the message was received
-     * @param {String} username The username who sent the message
-     * @param {String} message The message sent
-     */
-    onMessage(channel, username, message) {
-
-        try {
-            
-            console.log(`${username}: ${message}`);
-            this.say(channel, message);
-            
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    /**
-     * Tell the bot to send a message to a Twitch channel
-     * @param {String} channel The Twitch channel where the bot will send the message
-     * @param {String} message The message the bot will send
-     */
-    say(channel, message) {
-
-        this.connection.sendUTF(`PRIVMSG ${channel} :${message}`);
-
-    }
+    
 
 }
 

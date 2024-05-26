@@ -1,4 +1,5 @@
-const { buildURLWithParams, isEmpty } = require("#Helpers/helpers");
+const axios = require("axios");
+const { buildURLWithParams } = require("#Helpers/helpers");
 
 const UserTrait = {
 

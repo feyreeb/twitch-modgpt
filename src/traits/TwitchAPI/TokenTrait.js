@@ -25,11 +25,13 @@ const TokenTrait = {
                 fs.readFileSync(tokenFile, { encoding: 'utf8', flag: 'r' })
             );
     
-            await this.validateToken(); 
+            return await this.validateToken(); 
 
         }
 
-        throw new Error(`Can't connect to the API if ${from} account doesn't authorize the application from ${process.env.BOT_HOSTED_URL}/auth-${from}`);
+        throw {
+            type: "request_access"
+        }
 
     },
 
@@ -69,7 +71,9 @@ const TokenTrait = {
         const { saved, token } = await OAuth.refreshToken(refresh_token, from);
 
         if (!saved)
-            throw new Error(`Couldn't authenticate the ${from}. You must reauthorize the ${from} from ${process.env.BOT_HOSTED_URL}/auth-${from}`);
+            throw {
+                type: "request_access"
+            }
 
         this.token = token;
 
