@@ -1,6 +1,7 @@
 const axios = require("axios");
 const { TokenTrait } = require("#Traits/TwitchAPI/TokenTrait");
 const { UserTrait } = require("#Traits/TwitchAPI/UserTrait");
+const { ModTrait } = require("#Traits/TwitchAPI/ModTrait");
 const { convertStringBoolean  } = require("#Helpers/helpers");
 
 class TwitchAPI {
@@ -14,10 +15,12 @@ class TwitchAPI {
             this.clientId = this.usingTokenFromBot ? process.env.TWITCH_BOT_CLIENT_ID : process.env.TWITCH_STREAMER_CLIENT_ID;
             this.clientSecret = this.usingTokenFromBot ? process.env.TWITCH_STREAMER_CLIENT_ID : process.env.TWITCH_STREAMER_CLIENT_SECRET;
             this.token = null;
+            this.moderatorId = null;
 
             this.endpoints = {
                 validateToken: "https://id.twitch.tv/oauth2/validate",
-                user: "https://api.twitch.tv/helix/users"
+                user: "https://api.twitch.tv/helix/users",
+                ban: "https://api.twitch.tv/helix/moderation/bans"
             };
 
             // A way to implement traits in JavaScript
@@ -40,7 +43,8 @@ class TwitchAPI {
     useTrait() {
         return [
             TokenTrait,
-            UserTrait
+            UserTrait,
+            ModTrait
         ];
     }
 

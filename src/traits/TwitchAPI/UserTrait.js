@@ -12,7 +12,9 @@ const UserTrait = {
 
         let parsedUser = userToParse;
 
-        if (userToParse.charAt(0) === "@") 
+        const possibleInitialCharacters = ["@", "#"]
+
+        if (possibleInitialCharacters.includes(userToParse.charAt(0))) 
             parsedUser = parsedUser.slice(1);
 
         return parsedUser;

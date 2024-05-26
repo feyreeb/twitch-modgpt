@@ -24,6 +24,13 @@ const TokenTrait = {
             this.token = JSON.parse(
                 fs.readFileSync(tokenFile, { encoding: 'utf8', flag: 'r' })
             );
+
+            const moderatorInfo = await this.constructor.getUserByToken({
+                token: this.token.access_token,
+                clientId: this.clientId
+            })
+
+            this.moderatorId = moderatorInfo.id;
     
             return await this.validateToken(); 
 

@@ -11,11 +11,20 @@ const BotModerationActionsTrait = {
 
     },
 
-    async performModerationActions(channel, command) {
+    async performModerationActions(channel, prompt) {
 
         const twitchAPI = await TwitchAPI.getInstance();
-        this.say(channel, "Baneado bro :)");
-        console.log(await twitchAPI.getUserByUsername("Read_Rizzy"));
+
+        const args = prompt.slice(1).split(" ");
+        const command = args.shift();
+
+        const commands = {
+            timeout: twitchAPI.timeout.bind(twitchAPI),
+        }
+
+        const exec = commands[command];
+        args.unshift(channel);
+        await exec(...args);
 
     }
 

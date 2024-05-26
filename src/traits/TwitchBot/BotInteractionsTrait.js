@@ -13,7 +13,7 @@ const BotInteractionsTrait = {
         try {
 
             //if (message.charAt(0) === "/")
-                await this.performModerationActions(channel, message);
+                await this.performModerationActions(channel, "/timeout @RetaxMaster 60 porque si");
             //else 
                 //this.say(channel, message);
             
