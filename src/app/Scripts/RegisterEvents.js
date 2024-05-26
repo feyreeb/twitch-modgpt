@@ -30,6 +30,7 @@ Socket.listen("connect", connection => {
 
         TwitchBot.login(token.access_token, token.refresh_token);
         TwitchBot.setBotScopes(token.scope);
+        TwitchBot.configureBot();
         
     }
     else {
@@ -51,7 +52,6 @@ Socket.listen("connect", connection => {
         messages.forEach(async message => {
 
             const parsedMessage = parseMessage(message);
-            console.log(message);
 
             if(!!!parsedMessage) return;
 

@@ -32,6 +32,23 @@ const helpers = {
      */
     convertStringBoolean: value => value === "true" || value === true,
 
+    /**
+     * Build a url with tha passed params
+     * @param {String} baseURL The URL base to append params
+     * @param {Object} params A JSON with pairs key:value with the params to append
+     * @returns {String} The URL with the params appended
+     */
+    buildURLWithParams: (baseURL, params) => {
+
+        const url = new URL(baseURL);
+
+        for (const key in params)
+            url.searchParams.append(key, params[key]);
+
+        return url.href;
+
+    },
+
 }
 
 module.exports = helpers;

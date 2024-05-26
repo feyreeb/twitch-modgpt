@@ -28,6 +28,7 @@
         "#Classes/*": "./src/app/Classes/*.js",
         "#Controllers": "./src/app/Controllers/index.js",
         "#Scripts/*": "./src/app/Scripts/*.js",
+        "#Traits/*": "./src/traits/*.js",
         "#root/*": "./*.js"
     },
     "dependencies": {

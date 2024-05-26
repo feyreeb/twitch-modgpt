@@ -1,6 +1,7 @@
 const { Controller } = require("./Controller");
 const { OAuth } = require("#Classes/TwitchOAuth");
 const { TwitchBot } = require("#Classes/TwitchBot");
+const { TwitchAPI } = require("#Classes/TwitchAPI");
 
 class RequestsController extends Controller {
 

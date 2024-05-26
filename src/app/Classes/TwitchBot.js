@@ -1,4 +1,5 @@
 const { OAuth } = require("#Classes/TwitchOAuth");
+const { TwitchAPI } = require("#Classes/TwitchAPI");
 
 class TwitchBotService {
 
@@ -9,12 +10,23 @@ class TwitchBotService {
             this.connection = null;
             this.botScopes = null;
             this.refreshBotToken = null;
+            this.accessBotToken = null;
+            this.botData = null;
 
             TwitchBotService.instance = this;
 
         }
 
         return TwitchBotService.instance;
+
+    }
+
+    async configureBot() {
+
+        this.botData = await TwitchAPI.getUserByToken({
+            token: this.accessBotToken,
+            clientId: process.env.TWITCH_BOT_CLIENT_ID
+        });
 
     }
 
@@ -46,6 +58,7 @@ class TwitchBotService {
         connection.sendUTF(`PASS oauth:${accessToken}`); 
         connection.sendUTF(`NICK AnyUser`);
 
+        this.accessBotToken = accessToken;
         this.refreshBotToken = refreshToken;
 
     }
@@ -75,8 +88,15 @@ class TwitchBotService {
      * @param {String} message The message sent
      */
     onMessage(channel, username, message) {
-        console.log(`${username}: ${message}`);
-        this.say(channel, message);
+
+        try {
+            
+            console.log(`${username}: ${message}`);
+            this.say(channel, message);
+            
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     /**
