@@ -13,14 +13,28 @@ const BotInteractionsTrait = {
         try {
 
             //if (message.charAt(0) === "/")
-                await this.performModerationActions(channel, "/timeout @RetaxMaster 60 porque si");
+                //await this.performModerationActions(channel, "/timeout @RetaxMaster 60 porque si");
+                await this.performModerationActions(channel, "/timeout @randomuser 69 porque si");
+
+                /* setTimeout(async () => {
+                    await this.performModerationActions(channel, "/untimeout @RetaxMaster");
+                }, 2000) */
             //else 
                 //this.say(channel, message);
             
         } catch (error) {
 
-            if ( hasValue(error.type) && error.type === "request_access" )
-                return this.requestAuthorizationForModerationActions(channel);
+            if ( hasValue(error.type) ) {
+
+                const errors = {
+                    request_access: this.requestAuthorizationForModerationActions(channel),
+                    command_not_supported: "I apologize, this command is still not supported :(",
+                    user_already_banned: "I'm sorry, this user is already banned :\\",
+                }
+
+                return this.say(channel, errors[error.type]);
+
+            }
 
             console.log(error);
 

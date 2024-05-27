@@ -25,6 +25,8 @@ const TokenTrait = {
                 fs.readFileSync(tokenFile, { encoding: 'utf8', flag: 'r' })
             );
 
+            await this.validateToken(); 
+
             const moderatorInfo = await this.constructor.getUserByToken({
                 token: this.token.access_token,
                 clientId: this.clientId
@@ -32,7 +34,7 @@ const TokenTrait = {
 
             this.moderatorId = moderatorInfo.id;
     
-            return await this.validateToken(); 
+            return;
 
         }
 
@@ -52,16 +54,23 @@ const TokenTrait = {
             token: { access_token }
         } = this;
 
-        const { data } = await axios({
-            method: "get",
-            url: validateToken,
-            headers: {
-                Authorization: `Bearer ${access_token}`
-            }
-        });
+        try {
 
-        if ( isEmpty(data.client_id) )
+            const { data } = await axios({
+                method: "get",
+                url: validateToken,
+                headers: {
+                    Authorization: `OAuth ${access_token}`
+                }
+            });
+    
+            if ( isEmpty(data.client_id) )
+                await this.refreshToken();
+
+        }
+        catch(error) {
             await this.refreshToken();
+        }
     
     },
 
