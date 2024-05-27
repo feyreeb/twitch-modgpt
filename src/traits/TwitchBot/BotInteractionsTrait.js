@@ -14,7 +14,7 @@ const BotInteractionsTrait = {
 
             //if (message.charAt(0) === "/")
                 //await this.performModerationActions(channel, "/timeout @RetaxMaster 60 porque si");
-                await this.performModerationActions(channel, "/timeout @randomuser 69 porque si");
+                await this.performModerationActions(channel, "/announceorange Hola amigos, esta es una prueba!");
 
                 /* setTimeout(async () => {
                     await this.performModerationActions(channel, "/untimeout @RetaxMaster");

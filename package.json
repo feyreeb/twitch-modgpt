@@ -29,6 +29,7 @@
         "#Controllers": "./src/app/Controllers/index.js",
         "#Scripts/*": "./src/app/Scripts/*.js",
         "#Traits/*": "./src/traits/*.js",
+        "#TwitchCommands/*": "./src/traits/TwitchAPI/Commands/*.js",
         "#root/*": "./*.js"
     },
     "dependencies": {

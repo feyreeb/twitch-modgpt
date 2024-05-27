@@ -30,7 +30,6 @@ Socket.listen("connect", connection => {
 
         TwitchBot.login(token.access_token, token.refresh_token);
         TwitchBot.setBotScopes(token.scope);
-        TwitchBot.configureBot();
         
     }
     else {
@@ -70,11 +69,14 @@ Socket.listen("connect", connection => {
                     break;
 
                 case '001':
+
+                    TwitchBot.configureBot();
+                    
                     // Successfully logged in, so join the channels.
                     channels.forEach(channel => {
                         console.log(`Joining to channel ${channel}`);
                         connection.sendUTF(`JOIN ${channel}`); 
-                    })
+                    });
                     break; 
 
                 /* case 'JOIN':
