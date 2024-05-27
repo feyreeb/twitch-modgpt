@@ -43,6 +43,13 @@ class SocketService {
 
     }
 
+    /**
+     * Resets the connection with the server
+     */
+    resetConnection() {
+        this._socketClient = null;
+    }
+
 }
 
 const Socket = new SocketService();

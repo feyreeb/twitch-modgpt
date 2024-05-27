@@ -13,8 +13,8 @@ const BotInteractionsTrait = {
         try {
 
             //if (message.charAt(0) === "/")
-                //await this.performModerationActions(channel, "/timeout @RetaxMaster 60 porque si");
-                await this.performModerationActions(channel, "/announceorange Hola amigos, esta es una prueba!");
+            if(username === "read_rizzy")
+                await this.performModerationActions(channel, "/" + message);
 
                 /* setTimeout(async () => {
                     await this.performModerationActions(channel, "/untimeout @RetaxMaster");
@@ -30,6 +30,8 @@ const BotInteractionsTrait = {
                     request_access: this.requestAuthorizationForModerationActions(channel),
                     command_not_supported: "I apologize, this command is still not supported :(",
                     user_already_banned: "I'm sorry, this user is already banned :\\",
+                    invalid_game: "I'm sorry, I couldn't find that game on Twitch :(. Did you write it correctly?",
+                    unauthorized: "I apologize, I can't perform that action if you are using me as moderator. If you want me to perform this action you must set your env variable USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS as false and provide your streamer credentials."
                 }
 
                 return this.say(channel, errors[error.type]);

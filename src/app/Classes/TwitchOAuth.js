@@ -15,6 +15,7 @@ class TwitchOAuth {
 
             this.moderationScopes = [
                 "channel%3Amoderate",
+                "channel_editor",
                 "moderator%3Amanage%3Abanned_users",
                 "moderation%3Aread",
                 "moderator%3Amanage%3Aannouncements",

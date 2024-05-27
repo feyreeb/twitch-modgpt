@@ -18,10 +18,12 @@ class TwitchAPI {
             this.moderatorId = null;
 
             this.endpoints = {
-                validateToken: "https://id.twitch.tv/oauth2/validate",
-                user: "https://api.twitch.tv/helix/users",
-                ban: "https://api.twitch.tv/helix/moderation/bans",
                 announcements: "https://api.twitch.tv/helix/chat/announcements",
+                ban: "https://api.twitch.tv/helix/moderation/bans",
+                channels: "https://api.twitch.tv/helix/channels",
+                games: "https://api.twitch.tv/helix/games",
+                user: "https://api.twitch.tv/helix/users",
+                validateToken: "https://id.twitch.tv/oauth2/validate",
             };
 
             // A way to implement traits in JavaScript
