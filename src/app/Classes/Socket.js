@@ -1,19 +1,27 @@
 const WebSocketClient = require("websocket").client;
 const { isEmpty } = require("#Helpers/helpers");
 
-class SocketService {
+class Socket {
 
-    constructor() {
+    constructor(wsServer) {
 
-        if (!SocketService.instance) {
+        this._socketClient = null;
 
-            this._socketClient = null;
-
-            SocketService.instance = this;
-
+        this.availableServers = {
+            twitch_irc: {
+                name: "Twitch IRC",
+                server: "wss://irc-ws.chat.twitch.tv:443"
+            },
+            twitch_pubsub: {
+                name: "Twitch PubSub",
+                server: "wss://pubsub-edge.twitch.tv",
+            }
         }
 
-        return SocketService.instance;
+        this.server = this.availableServers[wsServer];
+
+        if ( isEmpty(this.server) )
+            throw new Error("You are trying to connect to a not supported server");
 
     }
 
@@ -34,9 +42,9 @@ class SocketService {
     _connectToSocketServer() {
 
         if( isEmpty(this._socketClient) ) {
-            console.log("Trying to connect to Twitch IRC...");
+            console.log(`Trying to connect to ${this.server.name}...`);
             this._socketClient = new WebSocketClient();
-            this._socketClient.connect("wss://irc-ws.chat.twitch.tv:443");
+            this._socketClient.connect(this.server.server);
         }
             
         return this._socketClient;
@@ -51,7 +59,5 @@ class SocketService {
     }
 
 }
-
-const Socket = new SocketService();
 
 module.exports = { Socket };

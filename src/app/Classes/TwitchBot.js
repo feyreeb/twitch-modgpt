@@ -1,6 +1,7 @@
 const { BotInitializationTrait } = require("#Traits/TwitchBot/BotInitializationTrait");
 const { BotInteractionsTrait } = require("#Traits/TwitchBot/BotInteractionsTrait");
 const { BotModerationActionsTrait } = require("#Traits/TwitchBot/BotModerationActionsTrait");
+const { BotPubSubTrait } = require("#Traits/TwitchBot/BotPubSubTrait");
 
 class TwitchBotService {
 
@@ -35,7 +36,8 @@ class TwitchBotService {
         return [
             BotInitializationTrait,
             BotInteractionsTrait,
-            BotModerationActionsTrait
+            BotModerationActionsTrait,
+            BotPubSubTrait
         ];
     }
 

@@ -1,5 +1,7 @@
 const { OAuth } = require("#Classes/TwitchOAuth");
 const { TwitchAPI } = require("#Classes/TwitchAPI");
+const { WakeUpPubSub } =  require("#Scripts/WakeUpPubSub");
+const { isEmpty } =  require("#Helpers/helpers");
 
 const BotInitializationTrait = {
 
@@ -8,10 +10,29 @@ const BotInitializationTrait = {
      */
     async configureBot() {
 
-        this.botData = await TwitchAPI.getUserByToken({
-            token: this.accessBotToken,
-            clientId: process.env.TWITCH_BOT_CLIENT_ID
-        });
+        if( isEmpty(this.botData) )
+            this.botData = await TwitchAPI.getUserByToken({
+                token: this.accessBotToken,
+                clientId: process.env.TWITCH_BOT_CLIENT_ID
+            });
+
+        try {
+
+            const twitchAPI = await TwitchAPI.getInstance();
+            const channels = process.env.CHANNELS.split(",");
+
+            const channelIds = await Promise.all(
+                channels.map(async channel => {
+                    const userData = await twitchAPI.getUserByUsername(channel);
+                    return userData.id;
+                })
+            );
+
+            WakeUpPubSub(channelIds, twitchAPI.token.access_token, this);
+
+        } catch (error) {
+            console.log(error);
+        }
 
     },
 

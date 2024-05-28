@@ -50,7 +50,12 @@ class RequestsController extends Controller {
 
         const { saved } = await OAuth.getAndSaveToken("streamer", code);
 
-        return saved ? res.send("That's all! Now your bot can perform moderation actions") : res.send("There was an error getting your token");
+        if (saved) {
+            TwitchBot.configureBot();
+            return res.send("That's all! Now your bot can perform moderation actions");
+        }
+
+        return res.send("There was an error getting your token");
 
     }
 

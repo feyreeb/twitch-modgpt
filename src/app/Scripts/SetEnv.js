@@ -6,7 +6,8 @@ const {
     TWITCH_BOT_CLIENT_ID,
     TWITCH_BOT_CLIENT_SECRET,
     CHANNELS,
-    DEFAULT_TIMEOUT_TIME
+    DEFAULT_TIMEOUT_TIME,
+    ENABLE_BOT_REWARDS_ANNOUNCEMENTS,
 } = process.env;
 
 if ( isEmpty(TWITCH_BOT_CLIENT_ID) || isEmpty(TWITCH_BOT_CLIENT_SECRET) )
@@ -23,6 +24,9 @@ if ( isEmpty(USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS) )
 
 if ( isEmpty(DEFAULT_TIMEOUT_TIME) )
     process.env.DEFAULT_TIMEOUT_TIME = 60;
+
+if ( isEmpty(ENABLE_BOT_REWARDS_ANNOUNCEMENTS) )
+    process.env.ENABLE_BOT_REWARDS_ANNOUNCEMENTS = false;
 
 /* if ( !process.env.USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS )
     throw new Error("You need to provide TWITCH_STREAMER_CLIENT_ID and TWITCH_STREAMER_CLIENT_SECRET env variables if your bot will not have a moderator role in your channel"); */

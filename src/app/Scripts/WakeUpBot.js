@@ -7,16 +7,18 @@ const { parseMessage } = require("#Helpers/twitchParser");
 // Parse Channels
 const channels = process.env.CHANNELS.split(",").map( channel => "#" + channel.toLowerCase() );
 
+// Get Socket instance,
+const socket = new Socket("twitch_irc");
+
 // Handle connections
+const connectBot = () => {
 
-const connectToTwitch = () => {
-
-    Socket.listen('connectFailed', error => {
+    socket.listen('connectFailed', error => {
         console.log("Error connecting to Twitch IRC :(");
         console.log(error);
     });
     
-    Socket.listen("connect", connection => {
+    socket.listen("connect", connection => {
     
         console.log("Connected successfully to Twitch IRC!");
         TwitchBot.setConnection(connection);
@@ -46,8 +48,8 @@ const connectToTwitch = () => {
 
             if (connection.closeReasonCode == "1006") {
                 console.log("Tiwtch closed connection. Reconnecting...");
-                Socket.resetConnection();
-                connectToTwitch();
+                socket.resetConnection();
+                connectBot();
             }
 
         });
@@ -133,4 +135,4 @@ const connectToTwitch = () => {
 
 }
 
-connectToTwitch();
+connectBot();

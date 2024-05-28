@@ -3,7 +3,7 @@ const express = require("express");
 try {
     
     require("#Scripts/SetEnv");
-    require("#Scripts/RegisterEvents");
+    require("#Scripts/WakeUpBot");
 
     //Initializations
     const app = express();

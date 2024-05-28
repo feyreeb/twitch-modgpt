@@ -14,7 +14,11 @@ class TwitchOAuth {
             this.useBotAccountForModerationActions = convertStringBoolean(process.env.USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS);
 
             this.moderationScopes = [
+                "bits:read",
                 "channel%3Amoderate",
+                "chat:read",
+                "channel:read:redemptions",
+                "channel:read:subscriptions",
                 "channel_editor",
                 "moderator%3Amanage%3Abanned_users",
                 "moderation%3Aread",
@@ -34,7 +38,7 @@ class TwitchOAuth {
                 "moderator%3Aread%3Ashoutouts",
                 "moderator%3Amanage%3Ashoutouts",
                 "moderator%3Aread%3Aunban_requests",
-                "moderator%3Amanage%3Aunban_requests"
+                "moderator%3Amanage%3Aunban_requests",
             ];
 
             TwitchOAuth.instance = this;
@@ -145,14 +149,7 @@ class TwitchOAuth {
             const token = response.data;
             const tokenFile = path.resolve(tokenFileName);
 
-            if(fs.existsSync(tokenFile)) {
-                fs.writeFileSync(tokenFile, JSON.stringify(token))
-            }
-            else {
-                const writeStream = fs.createWriteStream(tokenFile);
-                writeStream.write(JSON.stringify(token));
-                writeStream.end();
-            }
+            fs.writeFileSync(tokenFile, JSON.stringify(token));
 
             return {
                 token: token,
