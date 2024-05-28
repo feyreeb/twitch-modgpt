@@ -97,7 +97,48 @@ module.exports = {
                 }
             }
 
-        }
+        },
+
+        /**
+         * Changes the game/category of a channel
+         * @param {String} channel The channel whose game/category will be changed
+         * @param {String} title The title of the stream that will be setted
+         */
+        async title(...args) {
+
+            this.checkIfCanPerform();
+
+            const channel = args.shift();
+            const title = args.join(" ");
+
+            const {
+                clientId,
+                endpoints: { channels },
+                token: { access_token }
+            } = this;
+            
+            try {
+
+                const broadcaster = await this.getUserByUsername(channel);
+
+                await axios({
+                    method: "patch",
+                    url: buildURLWithParams(channels, {
+                        broadcaster_id: broadcaster.id
+                    }),
+                    data: { title },
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                        'Client-Id': clientId,
+                        'Content-Type': "application/json"
+                    }
+                });
+            
+            } catch (error) {
+                console.log(error);
+            }
+
+        },
 
     }
 
