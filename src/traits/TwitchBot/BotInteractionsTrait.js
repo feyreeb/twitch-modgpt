@@ -12,9 +12,21 @@ const BotInteractionsTrait = {
 
         try {
 
+            if ( hasValue(this.twitchInteractions) ) {
+
+                const response = await this.twitchInteractions.onMessage(channel.substring(1).toLocaleLowerCase(), username, message);
+
+                console.log("response");
+                console.log(response);
+
+                for (const message of response)
+                    this.say(channel, message);
+                
+            }
+
             //if (message.charAt(0) === "/")
-            if(username === "read_rizzy")
-                await this.performModerationActions(channel, "/" + message);
+            //if(username === "read_rizzy")
+                //await this.performModerationActions(channel, "/" + message);
 
                 /* setTimeout(async () => {
                     await this.performModerationActions(channel, "/untimeout @RetaxMaster");

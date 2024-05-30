@@ -8,6 +8,7 @@ const {
     CHANNELS,
     DEFAULT_TIMEOUT_TIME,
     ENABLE_BOT_REWARDS_ANNOUNCEMENTS,
+    GPT_MODEL
 } = process.env;
 
 if ( isEmpty(TWITCH_BOT_CLIENT_ID) || isEmpty(TWITCH_BOT_CLIENT_SECRET) )
@@ -27,6 +28,9 @@ if ( isEmpty(DEFAULT_TIMEOUT_TIME) )
 
 if ( isEmpty(ENABLE_BOT_REWARDS_ANNOUNCEMENTS) )
     process.env.ENABLE_BOT_REWARDS_ANNOUNCEMENTS = false;
+
+if ( isEmpty(GPT_MODEL) )
+    process.env.GPT_MODEL = "gpt-3.5-turbo";
 
 /* if ( !process.env.USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS )
     throw new Error("You need to provide TWITCH_STREAMER_CLIENT_ID and TWITCH_STREAMER_CLIENT_SECRET env variables if your bot will not have a moderator role in your channel"); */

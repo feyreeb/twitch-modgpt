@@ -1,7 +1,8 @@
 const { OAuth } = require("#Classes/TwitchOAuth");
 const { TwitchAPI } = require("#Classes/TwitchAPI");
 const { WakeUpPubSub } =  require("#Scripts/WakeUpPubSub");
-const { isEmpty } =  require("#Helpers/helpers");
+const { TwitchInteractions } =  require("#Classes/TwitchInteractions");
+const { hasValue, isEmpty } =  require("#Helpers/helpers");
 
 const BotInitializationTrait = {
 
@@ -29,6 +30,11 @@ const BotInitializationTrait = {
             );
 
             WakeUpPubSub(channelIds, twitchAPI.token.access_token, this);
+
+            if (hasValue(process.env.OPENAI_API_KEY)) {
+                this.twitchInteractions = new TwitchInteractions(this.botData, channels);
+                await this.twitchInteractions.startup();
+            }
 
         } catch (error) {
             console.log(error);
