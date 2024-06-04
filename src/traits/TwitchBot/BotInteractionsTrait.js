@@ -19,8 +19,7 @@ const BotInteractionsTrait = {
                 console.log("response");
                 console.log(response);
 
-                for (const message of response)
-                    this.say(channel, message);
+                this.say(channel, response);
                 
             }
 

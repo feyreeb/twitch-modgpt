@@ -8,6 +8,7 @@ class IA {
 
             this.assistant = null;
             this.threads = {};
+            this.bot = null;
 
             // A way to implement traits in JavaScript
             if("useTrait" in this)
@@ -29,7 +30,8 @@ class IA {
     }
 
     async startup(bot, channels) {
-        await this.setAssistant(bot.login);
+        this.bot = bot;
+        await this.setAssistant();
         await this.setThread(channels);
     }
 

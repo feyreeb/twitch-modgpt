@@ -32,7 +32,7 @@ const BotInitializationTrait = {
             WakeUpPubSub(channelIds, twitchAPI.token.access_token, this);
 
             if (hasValue(process.env.OPENAI_API_KEY)) {
-                this.twitchInteractions = new TwitchInteractions(this.botData, channels);
+                this.twitchInteractions = new TwitchInteractions(this, channels);
                 await this.twitchInteractions.startup();
             }
 
