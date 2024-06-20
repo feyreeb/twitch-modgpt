@@ -3,8 +3,14 @@ const path = require("path");
 const OpenAI = require("openai");
 const openai = new OpenAI();
 
+const { SupportedGPTCommands } = require("#Traits/IA/SupportedGPTCommands");
+const { hasValue } = require("#Helpers/helpers");
+
 const GPTTrait = {
 
+    /**
+     * Creates the assistant and set the personality and tools that will be moderating the chat
+     */
     async setAssistant() {
 
         const name = this.bot.botData.login;
@@ -15,101 +21,16 @@ const GPTTrait = {
         this.assistant = await openai.beta.assistants.create({
             name: name,
             instructions: instructions,
-            tools: [
-                {
-                    type: "function",
-                    function: {
-                        name: "nothing",
-                        description: "Esta función debe ser llamada cuando un usuario se está portando bien y no requiere ninguna acción de moderación o cuando determines que no es necesario interactuar con el chat.",
-                        parameters: {
-                            type: "object",
-                            properties: {
-                                user: {
-                                    type: "string",
-                                    description: "El nombre de usuario completo del usuario que no requirió ninguna acción",
-                                }
-                            },
-                            required: ["user"],
-                        },
-                    },
-                },
-                {
-                    type: "function",
-                    function: {
-                        name: "say",
-                        description: "Esta función debe ser llamada cuando determines que es necesario interactuar en el chat.",
-                        parameters: {
-                            type: "object",
-                            properties: {
-                                message: {
-                                    type: "string",
-                                    description: "El mensaje que vas a enviar al chat de Twitch.",
-                                }
-                            },
-                            required: ["message"],
-                        },
-                    },
-                },
-                {
-                    type: "function",
-                    function: {
-                        name: "timeout",
-                        description: "Silencia a un usuario que tiene un mal comportamiento en el chat",
-                        parameters: {
-                            type: "object",
-                            properties: {
-                                username: {
-                                    type: "string",
-                                    description: "El nombre de usuario completo del usuario que vas a silenciar",
-                                },
-                                time: {
-                                    type: "number",
-                                    description: "El tiempo en segundos que decidiste silenciar a dicho usuario",
-                                },
-                                reason: {
-                                    type: "string",
-                                    description: "La razón por la cual decidiste silenciar al usuario",
-                                },
-                                message: {
-                                    type: "string",
-                                    description: "Un mensaje amigable que quieras mandar al chat de Twitch después de silenciar al usuario",
-                                }
-                            },
-                            required: ["user"],
-                        },
-                    },
-                },
-                {
-                    type: "function",
-                    function: {
-                        name: "ban",
-                        description: "Banea a un usuario que tiene un mal comportamiento en el chat",
-                        parameters: {
-                            type: "object",
-                            properties: {
-                                username: {
-                                    type: "string",
-                                    description: "El nombre de usuario completo del usuario que vas a banear",
-                                },
-                                reason: {
-                                    type: "string",
-                                    description: "La razón por la cual decidiste banear al usuario",
-                                },
-                                message: {
-                                    type: "string",
-                                    description: "Un mensaje opcional que quieras mandar al chat de Twitch después de banear al usuario",
-                                }
-                            },
-                            required: ["user"],
-                        },
-                    },
-                },
-            ],
+            tools: SupportedGPTCommands,
             model: process.env.GPT_MODEL
         });
 
     },
 
+    /**
+     * Creates multiple conversation threads for each channel for the assistan
+     * @param {String} channels An array of the channels that the assistant will be moderating
+     */
     async setThread(channels) {
 
         for (const channel of channels)
@@ -117,6 +38,13 @@ const GPTTrait = {
 
     },
 
+    /**
+     * Add a message to the corresponding thread
+     * @param {String} channel The channel whereto add the message
+     * @param {String} username The username who sent the message
+     * @param {String} message The message to add
+     * @returns {openai.beta.thread.messages} An Open AI message object
+     */
     async addMessage(channel, username, message) {
 
         const chat = this.threads[channel];
@@ -131,6 +59,10 @@ const GPTTrait = {
 
     },
 
+    /**
+     * Analyzes the messages, determine an action and executes it
+     * @param {String} channel The channel where the bot will respond
+     */
     async getGPTResponse(channel) {
 
         const chat = this.threads[channel];
@@ -145,67 +77,53 @@ const GPTTrait = {
 
             if (event.event === "thread.run.requires_action") {
 
-                const submit = event.data.required_action.submit_tool_outputs.tool_calls.map(tools => {
+                const submit = await Promise.all(
+                    event.data.required_action.submit_tool_outputs.tool_calls.map(async tools => {
 
-                    const commandName = tools.function.name;
-                    const commandArgs = JSON.parse(tools.function.arguments);
+                        console.log(tools);
 
-                    if(commandName !== "nothing") {
+                        const commandName = tools.function.name;
+                        const commandArgs = JSON.parse(tools.function.arguments);
 
-                        if (commandName !== "say")
-                            this.bot.performModerationActions(channel, commandName, commandArgs);
+                        if(commandName !== "nothing") {
 
-                        if (commandArgs.message)
-                            this.bot.say(channel, commandArgs.message);
+                            try {
+                                
+                                if (commandName !== "say")
+                                    await this.bot.performModerationActions(channel, commandName, commandArgs);
+        
+                                if (commandArgs.message)
+                                    this.bot.say(channel, commandArgs.message);
 
-                    }
+                            } catch (error) {
 
+                                console.log(error);
+                                
+                                if ( hasValue(error.type) ) {
 
-                    /* switch (tools.function.name) {
+                                    const errors = {
+                                        request_access: this.bot.requestAuthorizationForModerationActions(channel),
+                                        command_not_supported: "I apologize, this command is still not supported :(",
+                                        user_already_banned: "I'm sorry, this user is already banned :\\",
+                                        invalid_game: "I'm sorry, I couldn't find that game on Twitch :(. Did you write it correctly?",
+                                        unauthorized: "I apologize, I can't perform that action if you are using me as moderator. If you want me to perform this action you must set your env variable USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS as false and provide your streamer credentials."
+                                    }
 
-                        
+                                    this.bot.say(channel, errors[error.type]);
 
-                        case "say":
-                            console.log("Saying");
-                            console.log((JSON.parse(tools.function.arguments)).message);
-                            this.bot.say("#"+channel, (JSON.parse(tools.function.arguments)).message);
-                            return {
-                                tool_call_id: tools.id,
-                                output: (JSON.parse(tools.function.arguments)).message
-                            };
-                            break;
+                                }
 
-                        case "timeout":
-                            this.bot.say("#"+channel, (JSON.parse(tools.function.arguments)).message);
-                            return {
-                                tool_call_id: tools.id,
-                                output: (JSON.parse(tools.function.arguments)).message
-                            };
-                            break;
+                            }
 
-                        case "ban":
-                            this.bot.say("#"+channel, (JSON.parse(tools.function.arguments)).message);
-                            return {
-                                tool_call_id: tools.id,
-                                output: (JSON.parse(tools.function.arguments)).message
-                            };
-                            break;
+                        }
 
-                        case "nothing":
-                            this.bot.say("#"+channel, "No diré nada");
-                            return {
-                                tool_call_id: tools.id,
-                                output: "No diré nada"
-                            };
-                            break;
-                    } */
+                        return {
+                            tool_call_id: tools.id,
+                            output: "null",
+                        };
 
-                    return {
-                        tool_call_id: tools.id,
-                        output: "null",
-                    };
-
-                });
+                    })
+                );
 
                 await openai.beta.threads.runs.submitToolOutputsStream(
                     event.data.thread_id,
@@ -216,6 +134,8 @@ const GPTTrait = {
             }
 
         }
+
+        console.log("Running mod ended");
 
     },
 

@@ -68,7 +68,7 @@ module.exports = {
          * @param {String} channel The channel whereto perform the action 
          * @param {String} user The user that will be silenced
          */
-        async untimeout(channel, username) {
+        async untimeout(channel, { username }) {
 
             const {
                 moderatorId,

@@ -1,6 +1,8 @@
 const { hasValue } = require("#Helpers/helpers");
 const { TwitchAPI } = require("#Classes/TwitchAPI");
 
+const { convertStringBoolean } = require("#Helpers/helpers");
+
 const BotPubSubTrait = {
 
     /**
@@ -26,7 +28,7 @@ const BotPubSubTrait = {
         if ( hasValue(exec) )
             exec({
                 id: channel.id,
-                login: "#" + channel.login
+                login: channel.login
             }, data.data);
 
     },
@@ -40,7 +42,7 @@ const BotPubSubTrait = {
      */
     rewardRedeemed({ login }, { redemption }) {
 
-        if (process.env.ENABLE_BOT_REWARDS_ANNOUNCEMENTS)
+        if (convertStringBoolean(process.env.ENABLE_BOT_REWARDS_ANNOUNCEMENTS))
             this.say(login, `${redemption.user.display_name} has redeemed ${redemption.reward.title}`);
 
 

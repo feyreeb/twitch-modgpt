@@ -29,6 +29,11 @@ class IA {
         ]
     }
 
+    /**
+     * Initializes the AI
+     * @param {TwitchBot} bot An instance of the bot
+     * @param {Array} channels An array of channels where the bot will be used
+     */
     async startup(bot, channels) {
         this.bot = bot;
         await this.setAssistant();

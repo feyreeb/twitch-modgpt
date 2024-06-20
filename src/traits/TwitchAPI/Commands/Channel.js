@@ -49,12 +49,9 @@ module.exports = {
          * @param {String} channel The channel whose game/category will be changed
          * @param {String} name The name of the game/category that will be setted
          */
-        async game(...args) {
+        async game(channel, { name }) {
 
             this.checkIfCanPerform();
-
-            const channel = args.shift();
-            const name = args.join(" ");
 
             const game = await this._getGame({ name });
 
@@ -104,12 +101,9 @@ module.exports = {
          * @param {String} channel The channel whose game/category will be changed
          * @param {String} title The title of the stream that will be setted
          */
-        async title(...args) {
+        async title(channel, { title }) {
 
             this.checkIfCanPerform();
-
-            const channel = args.shift();
-            const title = args.join(" ");
 
             const {
                 clientId,
