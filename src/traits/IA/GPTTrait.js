@@ -58,7 +58,7 @@ const GPTTrait = {
                         parameters: {
                             type: "object",
                             properties: {
-                                user: {
+                                username: {
                                     type: "string",
                                     description: "El nombre de usuario completo del usuario que vas a silenciar",
                                 },
@@ -87,7 +87,7 @@ const GPTTrait = {
                         parameters: {
                             type: "object",
                             properties: {
-                                user: {
+                                username: {
                                     type: "string",
                                     description: "El nombre de usuario completo del usuario que vas a banear",
                                 },
@@ -147,9 +147,24 @@ const GPTTrait = {
 
                 const submit = event.data.required_action.submit_tool_outputs.tool_calls.map(tools => {
 
-                    console.log(tools)
+                    const commandName = tools.function.name;
+                    const commandArgs = JSON.parse(tools.function.arguments);
 
-                    switch (tools.function.name) {
+                    if(commandName !== "nothing") {
+
+                        if (commandName !== "say")
+                            this.bot.performModerationActions(channel, commandName, commandArgs);
+
+                        if (commandArgs.message)
+                            this.bot.say(channel, commandArgs.message);
+
+                    }
+
+
+                    /* switch (tools.function.name) {
+
+                        
+
                         case "say":
                             console.log("Saying");
                             console.log((JSON.parse(tools.function.arguments)).message);
@@ -183,7 +198,7 @@ const GPTTrait = {
                                 output: "No diré nada"
                             };
                             break;
-                    }
+                    } */
 
                     return {
                         tool_call_id: tools.id,
@@ -202,31 +217,7 @@ const GPTTrait = {
 
         }
 
-
-        /* for await (const event of run)
-            if (event.event === "thread.message.completed")
-                return event.data.content.map(message => message.text.value); */
-
-        return "No data";
-
     },
-
-    /* async getGPTResponse(channel) {
-
-        const chat = this.threads[channel];
-
-        const run = await openai.beta.threads.runs.create(chat.id, {
-            assistant_id: this.assistant.id,
-            stream: true
-        });
-
-        for await (const event of run)
-            if (event.event === "thread.message.completed")
-                return event.data.content.map(message => message.text.value);
-
-        return "No data";
-
-    } */
 
 }
 

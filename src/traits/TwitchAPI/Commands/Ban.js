@@ -8,11 +8,12 @@ module.exports = {
         /**
          * Timeout an user
          * @param {String} channel The channel whereto perform the action 
-         * @param {String} user The user that will be silenced
-         * @param {Number} [time=60] The time in seconds to timeout the user
-         * @param {String} [reason] The reason of the timeout
+         * @param {Object} args The arguments for this command
+         * @param {String} args.username The user that will be silenced
+         * @param {Number} [args.time=60] The time in seconds to timeout the user
+         * @param {String} [args.reason] The reason of the timeout
          */
-        async timeout(...args) {
+        async timeout(channel, { username, time, reason }) {
 
             const {
                 moderatorId,
@@ -20,16 +21,11 @@ module.exports = {
                 endpoints: { ban },
                 token: { access_token }
             } = this;
-
-            const channel = args.shift();
-            const user = args.shift();
-            const time = isNaN(parseInt(args[0])) ? null : args.shift();
-            const reason = args.length > 0 ? args.join(" ") : undefined;
             
             try {
 
                 const broadcaster = await this.getUserByUsername(channel);
-                const userToTimeout =  await this.getUserByUsername(user);
+                const userToTimeout =  await this.getUserByUsername(username);
 
                 const data = {
                     user_id: userToTimeout.id
@@ -112,9 +108,9 @@ module.exports = {
          * @param {String} user The user that will be silenced
          * @param {String} [reason] The reason of the timeout
          */
-        async ban(...args) {
-            args.splice(2, 0, "permanent");
-            this.timeout(...args);
+        async ban(channel, args) {
+            args.time = "permanent"
+            this.timeout(channel, args);
         },
 
         /**

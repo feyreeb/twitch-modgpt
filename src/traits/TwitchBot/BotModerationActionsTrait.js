@@ -18,20 +18,16 @@ const BotModerationActionsTrait = {
     /**
      * Perform a moderation action through Twitch API
      * @param {String} channel The channel where the command will be executed
-     * @param {String} prompt The command
+     * @param {Object} args An object with the arguments for this function
      * @returns {Promise} A return intedeed to kill the process
      */
-    async performModerationActions(channel, prompt) {
+    async performModerationActions(channel, command, args) {
 
         const twitchAPI = await TwitchAPI.getInstance();
 
-        const args = prompt.slice(1).split(" ");
-        const command = args.shift();
-
         if (command in twitchAPI) {
             const exec = twitchAPI[command].bind(twitchAPI);
-            args.unshift(channel);
-            return await exec(...args);
+            return await exec(channel, args);
         }
 
         throw {

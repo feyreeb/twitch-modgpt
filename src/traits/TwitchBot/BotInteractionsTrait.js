@@ -12,16 +12,8 @@ const BotInteractionsTrait = {
 
         try {
 
-            if ( hasValue(this.twitchInteractions) ) {
-
-                const response = await this.twitchInteractions.onMessage(channel.substring(1).toLocaleLowerCase(), username, message);
-
-                console.log("response");
-                console.log(response);
-
-                this.say(channel, response);
-                
-            }
+            if ( hasValue(this.twitchInteractions) ) 
+                await this.twitchInteractions.onMessage(channel.substring(1).toLocaleLowerCase(), username, message);
 
             //if (message.charAt(0) === "/")
             //if(username === "read_rizzy")
@@ -61,7 +53,7 @@ const BotInteractionsTrait = {
      * @param {String} message The message the bot will send
      */
     say(channel, message) {
-        this.connection.sendUTF(`PRIVMSG ${channel} :${message}`);
+        this.connection.sendUTF(`PRIVMSG #${channel} :${message}`);
     }
 
 }

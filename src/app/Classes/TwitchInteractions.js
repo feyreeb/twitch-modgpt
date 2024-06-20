@@ -16,7 +16,7 @@ class TwitchInteractions {
 
     async onMessage(channel, username, message) {
         await IA.addMessage(channel, username, message);
-        return await IA.getGPTResponse(channel);
+        await IA.getGPTResponse(channel);
     }
 
 }
