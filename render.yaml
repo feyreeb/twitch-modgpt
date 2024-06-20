@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: twitch-modgpt
+    runtime: node
+    branch: main
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: CHANNELS
+        value: <your-twitch-channel>
+      - key: TWITCH_BOT_CLIENT_ID
+        value: <your-twitch-bot-client-id>
+      - key: TWITCH_BOT_CLIENT_SECRET
+        value: <your-twitch-bot-client-secret>
+      - key: TWITCH_STREAMER_CLIENT_ID
+        value: <your-twitch-streamer-client-id>
+      - key: TWITCH_STREAMER_CLIENT_SECRET
+        value: <your-twitch-streamer-client-secret>
+      - key: BOT_HOSTED_URL
+        value: <your-turl-provided-by-render>
+      - key: USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS
+        value: "false"
+      - key: DEFAULT_TIMEOUT_TIME
+        value: "60"
+      - key: ENABLE_BOT_REWARDS_ANNOUNCEMENTS
+        value: "true"
+      - key: OPENAI_API_KEY
+        value: <your-openapi-key>
+      - key: GPT_MODEL
+        value: "gpt-4o"

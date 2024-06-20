@@ -1,9 +1,12 @@
 const express = require("express");
+const { job } = require("./render.js");
 
 try {
     
     require("#Scripts/SetEnv");
     require("#Scripts/WakeUpBot");
+
+    job.start();
 
     //Initializations
     const app = express();
