@@ -12,7 +12,7 @@ try {
     const app = express();
 
     app.set("port", process.env.PORT || 3000);
-    app.set("host", process.env.HOST || "localhost");
+    app.set("host", process.env.HOST || "0.0.0.0");
 
     // Global middlewares
     app.use(express.json({
