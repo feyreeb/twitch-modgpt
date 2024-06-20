@@ -13,9 +13,13 @@ module.exports = {
                         user: {
                             type: "string",
                             description: "El nombre de usuario completo del usuario que no requirió ninguna acción",
-                        }
+                        },
+                        reason: {
+                            type: "string",
+                            description: "Razón por la cual determinaste que no debeía ejecutarse ninguna acción.",
+                        },
                     },
-                    required: ["user"],
+                    required: ["user", "reason"],
                 },
             },
         },
