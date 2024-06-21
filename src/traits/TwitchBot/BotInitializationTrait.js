@@ -20,6 +20,7 @@ const BotInitializationTrait = {
         try {
 
             const twitchAPI = await TwitchAPI.getInstance();
+            twitchAPI.setBot(this);
             const channels = process.env.CHANNELS.split(",");
 
             const channelIds = await Promise.all(

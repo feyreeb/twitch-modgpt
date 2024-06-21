@@ -6,76 +6,12 @@ module.exports = {
     Announcements: {
 
         /**
-         * Make an announcement in the channel with default color
-         * @param {String} channel The channel where the announce will be send
-         * @param {String} message The announcement
-         */
-        async announce(...args) {
-            this._sendAnnounce(
-                args.shift(),
-                args.join(" ")
-            );
-        },
-
-        /**
-         * Make an announcement in the channel with blue color
-         * @param {String} channel The channel where the announce will be send
-         * @param {String} message The announcement
-         */
-        async announceblue(...args) {
-            this._sendAnnounce(
-                args.shift(),
-                args.join(" "),
-                "blue"
-            );
-        },
-
-        /**
-         * Make an announcement in the channel with green color
-         * @param {String} channel The channel where the announce will be send
-         * @param {String} message The announcement
-         */
-        async announcegreen(...args) {
-            this._sendAnnounce(
-                args.shift(),
-                args.join(" "),
-                "green"
-            );
-        },
-
-        /**
-         * Make an announcement in the channel with orange color
-         * @param {String} channel The channel where the announce will be send
-         * @param {String} message The announcement
-         */
-        async announceorange(...args) {
-            this._sendAnnounce(
-                args.shift(),
-                args.join(" "),
-                "orange"
-            );
-        },
-
-        /**
-         * Make an announcement in the channel with purple color
-         * @param {String} channel The channel where the announce will be send
-         * @param {String} message The announcement
-         */
-        async announcepurple(...args) {
-            this._sendAnnounce(
-                args.shift(),
-                args.join(" "),
-                "purple"
-            );
-        },
-
-        /**
          * Make an announcement in the channel
          * @param {String} channel The channel where the announce will be send
          * @param {String} message The announcement
          * @param {String} [color=null] The color of the announcement. Posible values: "primary", "blue", "green", "orange", "purple"
          */
-        async _sendAnnounce(channel, message, color = null) {
+        async announce(channel, { message, color }) {
 
             const {
                 moderatorId,

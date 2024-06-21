@@ -15,12 +15,14 @@ class TwitchAPI {
             this.clientId = this.usingTokenFromBot ? process.env.TWITCH_BOT_CLIENT_ID : process.env.TWITCH_STREAMER_CLIENT_ID;
             this.clientSecret = this.usingTokenFromBot ? process.env.TWITCH_STREAMER_CLIENT_ID : process.env.TWITCH_STREAMER_CLIENT_SECRET;
             this.token = null;
+            this.bot = null;
             this.moderatorId = null;
 
             this.endpoints = {
                 announcements: "https://api.twitch.tv/helix/chat/announcements",
                 ban: "https://api.twitch.tv/helix/moderation/bans",
                 channels: "https://api.twitch.tv/helix/channels",
+                clips: "https://api.twitch.tv/helix/clips",
                 games: "https://api.twitch.tv/helix/games",
                 user: "https://api.twitch.tv/helix/users",
                 validateToken: "https://id.twitch.tv/oauth2/validate",
@@ -49,6 +51,10 @@ class TwitchAPI {
             UserTrait,
             ModTrait
         ];
+    }
+
+    setBot(bot) {
+        this.bot = bot;
     }
 
     /**

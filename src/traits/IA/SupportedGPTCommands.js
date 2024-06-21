@@ -1,11 +1,15 @@
-const { General } = require("#Traits/IA/functions/General");
-const { Ban } = require("#Traits/IA/functions/Ban");
-const { Channel } = require("#Traits/IA/functions/Channel");
+const { General } = require("#AssistantFunctions/General");
+const { Ban } = require("#AssistantFunctions/Ban");
+const { Channel } = require("#AssistantFunctions/Channel");
+const { Clips } = require("#AssistantFunctions/Clips");
+const { Announcements } = require("#AssistantFunctions/Announcements");
 
 module.exports = {
     SupportedGPTCommands: [
-        ...General,
+        ...Announcements,
         ...Ban,
         ...Channel,
+        ...Clips,
+        ...General,
     ]
 }

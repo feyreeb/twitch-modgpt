@@ -24,6 +24,7 @@
     },
     "homepage": "https://github.com/RetaxMaster/twitch-modgpt#readme",
     "imports": {
+        "#AssistantFunctions/*": "./src/traits/IA/functions/*.js",
         "#Helpers/*": "./src/helpers/*.js",
         "#Classes/*": "./src/app/Classes/*.js",
         "#Controllers": "./src/app/Controllers/index.js",

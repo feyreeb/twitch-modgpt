@@ -16,10 +16,10 @@ module.exports = {
                         },
                         message: {
                             type: "string",
-                            description: "Un mensaje opcional que quieras mandar al chat de Twitch después de cambiar el título",
+                            description: "Un mensaje diciendo que estás cambiando el título",
                         }
                     },
-                    required: ["title"],
+                    required: ["title", "message"],
                 },
             },
         },
@@ -38,10 +38,10 @@ module.exports = {
                         },
                         message: {
                             type: "string",
-                            description: "Un mensaje opcional que quieras mandar al chat de Twitch después de cambiar el título",
+                            description: "Un mensaje diciendo que estás cambiando la categoría",
                         }
                     },
-                    required: ["title"],
+                    required: ["title", "message"],
                 },
             },
         },

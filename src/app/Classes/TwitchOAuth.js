@@ -20,6 +20,7 @@ class TwitchOAuth {
                 "channel:read:redemptions",
                 "channel:read:subscriptions",
                 "channel_editor",
+                "clips:edit",
                 "moderator%3Amanage%3Abanned_users",
                 "moderation%3Aread",
                 "moderator%3Amanage%3Aannouncements",
