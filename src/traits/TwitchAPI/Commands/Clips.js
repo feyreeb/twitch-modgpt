@@ -1,11 +1,15 @@
 const axios = require("axios");
-const { hasValue, buildURLWithParams } = require("#Helpers/helpers");
+const { buildURLWithParams } = require("#Helpers/helpers");
 
 module.exports = {
 
     Clips: {
 
-        async createClip(channel, {message}) {
+        /**
+         * Create a clip of the latest 30 seconds
+         * @param {String} channel The channel which clip will be created
+         */
+        async createClip(channel) {
 
             const {
                 clientId,

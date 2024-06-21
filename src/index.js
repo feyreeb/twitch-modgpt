@@ -6,7 +6,7 @@ try {
     require("#Scripts/SetEnv");
     require("#Scripts/WakeUpBot");
 
-    //job.start();
+    job.start();
 
     //Initializations
     const app = express();

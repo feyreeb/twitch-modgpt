@@ -8,10 +8,10 @@ module.exports = {
         /**
          * Make an announcement in the channel
          * @param {String} channel The channel where the announce will be send
-         * @param {String} message The announcement
+         * @param {String} announcement The announcement
          * @param {String} [color=null] The color of the announcement. Posible values: "primary", "blue", "green", "orange", "purple"
          */
-        async announce(channel, { message, color }) {
+        async announce(channel, { announcement, color }) {
 
             const {
                 moderatorId,
@@ -33,7 +33,7 @@ module.exports = {
                         moderator_id: moderatorId
                     }),
                     data: {
-                        message: message,
+                        message: announcement,
                         color: announcementColor
                     },
                     headers: {

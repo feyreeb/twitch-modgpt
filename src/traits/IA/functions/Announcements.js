@@ -10,7 +10,7 @@ module.exports = {
                 parameters: {
                     type: "object",
                     properties: {
-                        message: {
+                        announcement: {
                             type: "string",
                             description: "El anuncio que <streamer> o <moderadores> o <trusted> te pidió que hicieras",
                         },
@@ -19,7 +19,7 @@ module.exports = {
                             description: "Elige una opción de la siguiente lista: primary, blue, green, orange, purple",
                         }
                     },
-                    required: ["message"],
+                    required: ["announcement"],
                 },
             },
         },
