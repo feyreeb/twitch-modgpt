@@ -88,6 +88,8 @@ const GPTTrait = {
                         if(commandName !== "nothing") {
 
                             try {
+
+                                commandArgs.bot = this.bot;
                                 
                                 if (commandName !== "say")
                                     await this.bot.performModerationActions(channel, commandName, commandArgs);

@@ -185,6 +185,32 @@ module.exports = {
                 },
             },
         },
+        
+        {
+            type: "function",
+            function: {
+                name: "reminder",
+                description: "Establece un recordatorio en la cantidad de tiempo que un usuario te lo pida",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        username: {
+                            type: "string",
+                            description: "El nombre de usuario de la persona que te pidió el recordatorio.",
+                        },
+                        message: {
+                            type: "string",
+                            description: "El recordatorio que te pidió el usuario.",
+                        },
+                        time: {
+                            type: "number",
+                            description: "El tiempo convertido en milisegundos que te pidió el usuario",
+                        }
+                    },
+                    required: ["username", "message", "time"],
+                },
+            },
+        },
 
     ]
 }
