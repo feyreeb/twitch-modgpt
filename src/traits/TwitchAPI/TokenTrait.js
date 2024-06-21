@@ -39,7 +39,8 @@ const TokenTrait = {
         }
 
         throw {
-            type: "request_access"
+            type: "request_access",
+            from: "loadToken"
         }
 
     },
@@ -88,7 +89,8 @@ const TokenTrait = {
 
         if (!saved)
             throw {
-                type: "request_access"
+                type: "request_access",
+                from: "refreshToken"
             }
 
         this.token = token;

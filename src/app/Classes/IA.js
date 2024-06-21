@@ -7,7 +7,7 @@ class IA {
         if (!IA.instance) {
 
             this.assistant = null;
-            this.threads = {};
+            this.chats = {};
             this.bot = null;
 
             // A way to implement traits in JavaScript
@@ -37,7 +37,7 @@ class IA {
     async startup(bot, channels) {
         this.bot = bot;
         await this.setAssistant();
-        await this.setThread(channels);
+        await this.createChats(channels);
     }
 
 }

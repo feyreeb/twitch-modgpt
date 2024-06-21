@@ -3,11 +3,8 @@ const { IA } = require("#Classes/IA");
 class TwitchInteractions {
 
     constructor(bot, channels) {
-
-        this.messageHistory = [];
         this.bot = bot;
         this.channels = channels;
-
     }
 
     /**
@@ -24,8 +21,7 @@ class TwitchInteractions {
      * @param {String} message The message sent by the user
      */
     async onMessage(channel, username, message) {
-        await IA.addMessage(channel, username, message);
-        await IA.getGPTResponse(channel);
+        await IA.processMessage(channel, username, message);
     }
 
 }

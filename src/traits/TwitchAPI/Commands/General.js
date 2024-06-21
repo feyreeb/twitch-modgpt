@@ -2,9 +2,9 @@ module.exports = {
 
     General: {
 
-        reminder(channel, { username, message, time, bot }) {
+        reminder(channel, { username, reminder, time, bot }) {
             setTimeout(() => {
-                bot.say(channel, `@${username} recuerda: ${message}`)
+                bot.say(channel, `@${username} recuerda: ${reminder}`)
             }, time)
         }
 

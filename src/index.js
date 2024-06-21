@@ -6,13 +6,13 @@ try {
     require("#Scripts/SetEnv");
     require("#Scripts/WakeUpBot");
 
-    job.start();
+    //job.start();
 
     //Initializations
     const app = express();
 
     app.set("port", process.env.PORT || 3000);
-    app.set("host", process.env.HOST || "0.0.0.0");
+    app.set("host", process.env.HOST || "localhost");
 
     // Global middlewares
     app.use(express.json({

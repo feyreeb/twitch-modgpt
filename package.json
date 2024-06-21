@@ -33,6 +33,7 @@
         "#root/*": "./*.js"
     },
     "dependencies": {
+        "async": "^3.2.5",
         "axios": "^1.7.2",
         "cron": "^3.1.7",
         "express": "^4.19.2",

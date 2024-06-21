@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const async = require('async');
 const OpenAI = require("openai");
 const openai = new OpenAI();
 
@@ -7,6 +8,18 @@ const { SupportedGPTCommands } = require("#Traits/IA/SupportedGPTCommands");
 const { hasValue } = require("#Helpers/helpers");
 
 const GPTTrait = {
+
+    async processMessage(channel, username, message) {
+        
+        this.chats[channel.toLowerCase()]
+            .push(`${username} dijo: ${message}`, error => {
+                if (error)
+                    console.error('Error en el procesamiento del mensaje:', error);
+                else
+                    console.log('Mensaje procesado con éxito');
+            });
+
+    },
 
     /**
      * Creates the assistant and set the personality and tools that will be moderating the chat
@@ -27,33 +40,44 @@ const GPTTrait = {
 
     },
 
-    /**
-     * Creates multiple conversation threads for each channel for the assistan
-     * @param {String} channels An array of the channels that the assistant will be moderating
-     */
-    async setThread(channels) {
+    async createChats(channels) {
 
         for (const channel of channels)
-            this.threads[channel.toLowerCase()] = await openai.beta.threads.create();
+            this.chats[channel.toLowerCase()] = await this.createQueue(channel)
+
+    },
+
+    async createQueue(channel) {
+
+        const thread = await openai.beta.threads.create();
+
+        // This queue unqueue one by one message that was enqueued each time a Twitch message is received
+        return async.queue(async message => {
+            try {
+                await this.addMessage(thread, message);
+                await this.getGPTResponse(thread, channel);
+            } catch (error) {
+                console.error('Error procesando el mensaje:', error.response ? error.response.data : error.message);
+            }
+        }, 1); // Just one message at a time
+
 
     },
 
     /**
      * Add a message to the corresponding thread
-     * @param {String} channel The channel whereto add the message
-     * @param {String} username The username who sent the message
+     * @param {String} thread The Open AI Thread where the message will be created
      * @param {String} message The message to add
      * @returns {openai.beta.thread.messages} An Open AI message object
      */
-    async addMessage(channel, username, message) {
+    async addMessage(thread, message) {
 
-        const chat = this.threads[channel];
-
+        console.log("Adding message to thread");
         return await openai.beta.threads.messages.create(
-            chat.id,
+            thread.id,
             {
                 role: "user",
-                content: `${username} dijo: ${message}`
+                content: message
             }
         );
 
@@ -61,85 +85,117 @@ const GPTTrait = {
 
     /**
      * Analyzes the messages, determine an action and executes it
-     * @param {String} channel The channel where the bot will respond
+     * @param {String} thread The Open AI Thread that will be run
+     * @param {String} channel The channel of this thread
      */
-    async getGPTResponse(channel) {
+    async getGPTResponse(thread, channel) {
 
-        const chat = this.threads[channel];
-
-        const run = await openai.beta.threads.runs.create(chat.id, {
+        const run = await openai.beta.threads.runs.create(thread.id, {
             assistant_id: this.assistant.id,
             stream: true
         });
 
         console.log("Running mod");
-        for await (const event of run) {
 
-            if (event.event === "thread.run.requires_action") {
-
-                const submit = await Promise.all(
-                    event.data.required_action.submit_tool_outputs.tool_calls.map(async tools => {
-
-                        console.log(tools);
-
-                        const commandName = tools.function.name;
-                        const commandArgs = JSON.parse(tools.function.arguments);
-
-                        if(commandName !== "nothing") {
-
-                            try {
-
-                                commandArgs.bot = this.bot;
-                                
-                                if (commandName !== "say")
-                                    await this.bot.performModerationActions(channel, commandName, commandArgs);
-        
-                                if (commandArgs.message)
-                                    this.bot.say(channel, commandArgs.message);
-
-                            } catch (error) {
-
-                                console.log(error);
-                                
-                                if ( hasValue(error.type) ) {
-
-                                    const errors = {
-                                        request_access: this.bot.requestAuthorizationForModerationActions(channel),
-                                        command_not_supported: "I apologize, this command is still not supported :(",
-                                        user_already_banned: "I'm sorry, this user is already banned :\\",
-                                        invalid_game: "I'm sorry, I couldn't find that game on Twitch :(. Did you write it correctly?",
-                                        unauthorized: "I apologize, I can't perform that action if you are using me as moderator. If you want me to perform this action you must set your env variable USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS as false and provide your streamer credentials."
-                                    }
-
-                                    this.bot.say(channel, errors[error.type]);
-
-                                }
-
-                            }
-
-                        }
-
-                        return {
-                            tool_call_id: tools.id,
-                            output: "null",
-                        };
-
-                    })
-                );
-
-                await openai.beta.threads.runs.submitToolOutputsStream(
-                    event.data.thread_id,
-                    event.data.id,
-                    { tool_outputs: submit },
-                );
-
-            }
-
-        }
-
-        console.log("Running mod ended");
+        return await this.processRun(run, channel);
 
     },
+
+    /**
+     * Process a run until it resolves all actions and finishes
+     * @param {openai.beta.threads.runs} run The run to process
+     * @param {String} channel The channel that is running the thread
+     * @returns {Promise<void>} When the run finishes successfully
+     */
+    processRun(run, channel) {
+
+        return new Promise(async (resolve, reject) => {
+
+            for await (const event of run) {
+    
+                if (event.event === "thread.run.requires_action") {
+    
+                    const submit = await Promise.all(
+                        event.data.required_action.submit_tool_outputs.tool_calls.map(async tools => {
+    
+                            console.log(tools);
+    
+                            const commandName = tools.function.name;
+                            const commandArgs = JSON.parse(tools.function.arguments);
+    
+                            if(commandName !== "nothing") {
+    
+                                try {
+    
+                                    commandArgs.bot = this.bot;
+                                    
+                                    if (commandName !== "say")
+                                        await this.bot.performModerationActions(channel, commandName, commandArgs);
+            
+                                    if (commandArgs.message)
+                                        this.bot.say(channel, commandArgs.message);
+    
+                                } catch (error) {
+                                    
+                                    if ( hasValue(error.type) ) {
+    
+                                        const errors = {
+                                            request_access: this.bot.requestAuthorizationForModerationActions(channel),
+                                            command_not_supported: "I apologize, this command is still not supported :(",
+                                            user_already_banned: "I'm sorry, this user is already banned :\\",
+                                            invalid_game: "I'm sorry, I couldn't find that game on Twitch :(. Did you write it correctly?",
+                                            unauthorized: "I apologize, I can't perform that action if you are using me as moderator. If you want me to perform this action you must set your env variable USE_BOT_ACCOUNT_FOR_MODERATION_ACTIONS as false and provide your streamer credentials."
+                                        }
+    
+                                        this.bot.say(channel, errors[error.type]);
+    
+                                    }
+    
+                                    reject(error);
+    
+                                }
+    
+                            }
+    
+                            return {
+                                tool_call_id: tools.id,
+                                output: "null",
+                            };
+    
+                        })
+                    );
+    
+                    const newRun = await openai.beta.threads.runs.submitToolOutputsStream(
+                        event.data.thread_id,
+                        event.data.id,
+                        { tool_outputs: submit },
+                    );
+                    
+                    try {
+                        await this.processRun(newRun, channel);
+                        resolve();
+                    } catch (error) {
+                        reject(error);
+                    }
+    
+                }
+                else if (event.event === "thread.run.step.failed") {
+                    console.log(event);
+                }
+                else if (event.event === "thread.run.failed") {
+                    console.log(event);
+                    reject(event);
+                }
+                else if (event.event === "thread.run.completed") {
+                    console.log("Running mod ended");
+                    resolve();
+                }
+    
+            }
+
+        });
+
+    }
 
 }
 

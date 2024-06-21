@@ -36,7 +36,10 @@ const BotInitializationTrait = {
                 await this.twitchInteractions.startup();
             }
 
+            console.log("Bot configured successfully and ready to use!");
+
         } catch (error) {
+            console.log("From configure bot");
             console.log(error);
         }
 

@@ -29,3 +29,5 @@ services:
         value: <your-openapi-key>
       - key: GPT_MODEL
         value: "gpt-4o"
+      - key: HOST
+        value: "0.0.0.0"
