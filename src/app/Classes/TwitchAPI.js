@@ -2,6 +2,7 @@ const axios = require("axios");
 const { TokenTrait } = require("#Traits/TwitchAPI/TokenTrait");
 const { UserTrait } = require("#Traits/TwitchAPI/UserTrait");
 const { ModTrait } = require("#Traits/TwitchAPI/ModTrait");
+const { EventSubTrait } = require("#Traits/TwitchAPI/EventSubTrait");
 const { convertStringBoolean  } = require("#Helpers/helpers");
 
 class TwitchAPI {
@@ -23,7 +24,9 @@ class TwitchAPI {
                 ban: "https://api.twitch.tv/helix/moderation/bans",
                 channels: "https://api.twitch.tv/helix/channels",
                 clips: "https://api.twitch.tv/helix/clips",
+                eventSub: "https://api.twitch.tv/helix/eventsub/subscriptions",
                 games: "https://api.twitch.tv/helix/games",
+                shoutouts: "https://api.twitch.tv/helix/chat/shoutouts",
                 user: "https://api.twitch.tv/helix/users",
                 validateToken: "https://id.twitch.tv/oauth2/validate",
             };
@@ -49,7 +52,8 @@ class TwitchAPI {
         return [
             TokenTrait,
             UserTrait,
-            ModTrait
+            ModTrait,
+            EventSubTrait,
         ];
     }
 

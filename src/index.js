@@ -1,12 +1,14 @@
 const express = require("express");
 const { job } = require("./render.js");
+const { convertStringBoolean  } = require("#Helpers/helpers");
 
 try {
     
     require("#Scripts/SetEnv");
     require("#Scripts/WakeUpBot");
 
-    job.start();
+    if(convertStringBoolean(process.env.USING_RENDER))
+        job.start();
 
     //Initializations
     const app = express();

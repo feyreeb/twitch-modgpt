@@ -1,6 +1,7 @@
 const { OAuth } = require("#Classes/TwitchOAuth");
 const { TwitchAPI } = require("#Classes/TwitchAPI");
 const { WakeUpPubSub } =  require("#Scripts/WakeUpPubSub");
+const { WakeUpEventSub } =  require("#Scripts/WakeUpEventSub");
 const { TwitchInteractions } =  require("#Classes/TwitchInteractions");
 const { hasValue, isEmpty } =  require("#Helpers/helpers");
 
@@ -21,6 +22,7 @@ const BotInitializationTrait = {
 
             const twitchAPI = await TwitchAPI.getInstance();
             twitchAPI.setBot(this);
+            this.twitchAPI = twitchAPI;
             const channels = process.env.CHANNELS.split(",");
 
             const channelIds = await Promise.all(
@@ -31,6 +33,7 @@ const BotInitializationTrait = {
             );
 
             WakeUpPubSub(channelIds, twitchAPI.token.access_token, this);
+            WakeUpEventSub(channelIds, twitchAPI, this);
 
             if (hasValue(process.env.OPENAI_API_KEY)) {
                 this.twitchInteractions = new TwitchInteractions(this, channels);

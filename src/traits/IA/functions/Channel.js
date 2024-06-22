@@ -45,6 +45,24 @@ module.exports = {
                 },
             },
         },
+        
+        {
+            type: "function",
+            function: {
+                name: "shoutout",
+                description: "Promociona a los usuarios que <streamer> o <moderadores> o <trusted> te pida.",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        to: {
+                            type: "string",
+                            description: "El nombre de usuario que te pidieron que promociones",
+                        }
+                    },
+                    required: ["to"],
+                },
+            },
+        },
 
     ]
 

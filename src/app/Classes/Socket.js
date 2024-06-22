@@ -15,6 +15,10 @@ class Socket {
             twitch_pubsub: {
                 name: "Twitch PubSub",
                 server: "wss://pubsub-edge.twitch.tv",
+            },
+            twitch_eventsub: {
+                name: "Twitch EventSub",
+                server: "wss://eventsub.wss.twitch.tv/ws",
             }
         }
 

@@ -127,6 +127,8 @@ const GPTTrait = {
     
                                 try {
 
+                                    commandArgs.fromBot = true;
+
                                     if (commandArgs.message)
                                         this.bot.say(channel, commandArgs.message);
                                     

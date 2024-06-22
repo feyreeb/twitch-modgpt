@@ -2,6 +2,7 @@ const { BotInitializationTrait } = require("#Traits/TwitchBot/BotInitializationT
 const { BotInteractionsTrait } = require("#Traits/TwitchBot/BotInteractionsTrait");
 const { BotModerationActionsTrait } = require("#Traits/TwitchBot/BotModerationActionsTrait");
 const { BotPubSubTrait } = require("#Traits/TwitchBot/BotPubSubTrait");
+const { BotEventSubTrait } = require("#Traits/TwitchBot/BotEventSubTrait");
 
 class TwitchBotService {
 
@@ -14,6 +15,7 @@ class TwitchBotService {
             this.refreshBotToken = null;
             this.accessBotToken = null;
             this.botData = null;
+            this.twitchAPI = null;
 
             // A way to implement traits in JavaScript
             if("useTrait" in this)
@@ -37,7 +39,8 @@ class TwitchBotService {
             BotInitializationTrait,
             BotInteractionsTrait,
             BotModerationActionsTrait,
-            BotPubSubTrait
+            BotPubSubTrait,
+            BotEventSubTrait
         ];
     }
 

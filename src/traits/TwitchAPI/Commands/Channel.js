@@ -134,6 +134,54 @@ module.exports = {
 
         },
 
+        /**
+         * 
+         * @param {String|Number} channel The channel that is sending shoutout
+         * @param {Object} args The arguments for this command
+         * @param {Boolean} args.fromBot Wether is the bot who is executing this command
+         * @param {String|Number} args.to The channel who is receiving shoutout
+         */
+        async shoutout(channel, { fromBot, to }) {
+
+            const {
+                moderatorId,
+                clientId,
+                endpoints: { shoutouts },
+                token: { access_token }
+            } = this;
+            
+            try {
+
+                let fromId, toId;
+
+                if (fromBot) {
+                    fromId = (await this.getUserByUsername(channel)).id;
+                    toId = (await this.getUserByUsername(to)).id;
+                }
+                else {
+                    fromId = channel;
+                    toId = to;
+                }
+
+                await axios({
+                    method: "post",
+                    url: buildURLWithParams(shoutouts, {
+                        from_broadcaster_id: fromId,
+                        to_broadcaster_id: toId,
+                        moderator_id: moderatorId,
+                    }),
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                        'Client-Id': clientId
+                    }
+                });
+            
+            } catch (error) {
+                console.log(error.response.data);
+            }
+
+        }
+
     }
 
 }

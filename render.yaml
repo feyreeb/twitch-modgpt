@@ -31,3 +31,5 @@ services:
         value: "gpt-4o"
       - key: HOST
         value: "0.0.0.0"
+      - key: USING_RENDER
+        value: "true"
