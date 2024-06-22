@@ -24,6 +24,7 @@ const BotEventSubTrait = {
     async handleRaid(data) {
 
         this.say(data.event.to_broadcaster_user_name, `¡Gracias por la raid @${data.event.from_broadcaster_user_name} 💜!`);
+        this.say(data.event.to_broadcaster_user_name, `!so ${data.event.from_broadcaster_user_name}`);
         this.say(data.event.to_broadcaster_user_name, `¡Bienvenidos esas ${data.event.viewers} personitas al stream :D!`);
 
         this.twitchAPI.shoutout(data.event.to_broadcaster_user_id, {
