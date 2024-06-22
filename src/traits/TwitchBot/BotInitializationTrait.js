@@ -12,13 +12,13 @@ const BotInitializationTrait = {
      */
     async configureBot() {
 
-        if( isEmpty(this.botData) )
-            this.botData = await TwitchAPI.getUserByToken({
-                token: this.accessBotToken,
-                clientId: process.env.TWITCH_BOT_CLIENT_ID
-            });
-
         try {
+
+            if( isEmpty(this.botData) )
+                this.botData = await TwitchAPI.getUserByToken({
+                    token: this.accessBotToken,
+                    clientId: process.env.TWITCH_BOT_CLIENT_ID
+                });
 
             const twitchAPI = await TwitchAPI.getInstance();
             twitchAPI.setBot(this);
